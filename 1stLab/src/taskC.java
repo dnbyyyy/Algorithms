@@ -13,7 +13,6 @@ public class taskC {
                 data[i][j] = in.nextInt();
             }
         }
-        //hehe
         for (int i = 1; i < w; i++) {
             data[h - 1][i] += data[h - 1][i - 1];
         }
