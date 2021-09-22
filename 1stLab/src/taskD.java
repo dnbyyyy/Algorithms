@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class taskD {
     public static void main(String[] args) throws IOException {
-        Scanner in = new Scanner(new FileReader("smallsort.in"));
+        Scanner in = new Scanner(new FileReader("sort.in"));
         int elementCnt = in.nextInt();
         int[] data = new int[elementCnt];
         for (int i = 0; i < elementCnt; i++) {
@@ -26,7 +26,7 @@ public class taskD {
             else buf.append(data[i]);
         }
         String sortedDataStr = buf.toString();
-        FileWriter writer = new FileWriter("smallsort.out");
+        FileWriter writer = new FileWriter("sort.out");
         writer.write(sortedDataStr);
         in.close();
         writer.close();
