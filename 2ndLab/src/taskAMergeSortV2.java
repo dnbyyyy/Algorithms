@@ -3,17 +3,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class taskC {
-
-    static long cnt = 0;
-
+public class taskAMergeSortV2 {
     static void merge(int[] data, int left, int mid, int right){
         int result[] = new int[right - left];
         int it1 = 0, it2 = 0;
         while(left + it1 < mid && mid + it2 < right)
             if(data[left + it1] <= data[mid + it2]){
                 result[it1 + it2] = data[left + it1];
-                cnt += it2;
                 it1++;
             }
             else{
@@ -22,7 +18,6 @@ public class taskC {
             }
         while(left + it1 < mid){
             result[it1 + it2] = data[left + it1];
-            cnt += it2;
             it1++;
         }
         while(mid + it2 < right){
@@ -40,16 +35,27 @@ public class taskC {
     }
 
     public static void main(String[] args) throws IOException {
-        Scanner in = new Scanner(new FileReader("inversions.in"));
-        int n = in.nextInt();
-        int[] data = new int[n];
-        for (int i = 0; i < n; i++) {
-            data[i] = in.nextInt();
-        }
-        mergeSort(data, n);
-        FileWriter writer = new FileWriter("inversions.out");
-        writer.write(String.valueOf(cnt));
-        writer.close();
-        in.close();
+
+    Scanner in = new Scanner(new FileReader("sort.in"));
+
+    int n = in.nextInt();
+    int[] data = new int[n];
+    for (int i = 0; i < n; i++) {
+        data[i] = in.nextInt();
+    }
+
+    mergeSort(data, n);
+
+    StringBuilder buf = new StringBuilder();
+    for (int i = 0; i < n; i++) {
+        if (i != n - 1) buf.append(data[i]).append(" ");
+        else buf.append(data[i]);
+    }
+    String sortedDataStr = buf.toString();
+    FileWriter writer = new FileWriter("sort.out");
+    writer.write(sortedDataStr);
+
+    in.close();
+    writer.close();
     }
 }
