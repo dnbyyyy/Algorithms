@@ -8,7 +8,7 @@ public class taskC {
     static long cnt = 0;
 
     static void merge(int[] data, int left, int mid, int right){
-        int result[] = new int[right - left];
+        int[] result = new int[right - left];
         int it1 = 0, it2 = 0;
         while(left + it1 < mid && mid + it2 < right)
             if(data[left + it1] <= data[mid + it2]){
