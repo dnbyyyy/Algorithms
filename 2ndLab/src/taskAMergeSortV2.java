@@ -28,10 +28,12 @@ public class taskAMergeSortV2 {
             data[left + i] = result[i];
     }
 
-    static void mergeSort(int[] data, int n){
-        for(int i = 1; i < n; i *= 2)
-            for(int j = 0; j < n - i; j += 2 * i)
-                merge(data, j, j + i, Math.min(j + 2 * i, n));
+    static void mergeSort(int[] data, int left, int right){
+        if (left + 1 >= right) return;
+        int mid = (left + right) / 2;
+        mergeSort(data, left, mid);
+        mergeSort(data, mid, right);
+        merge(data, left, mid, right);
     }
 
     public static void main(String[] args) throws IOException {
@@ -44,7 +46,7 @@ public class taskAMergeSortV2 {
         data[i] = in.nextInt();
     }
 
-    mergeSort(data, n);
+    mergeSort(data, 0, data.length);
 
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i < n; i++) {
