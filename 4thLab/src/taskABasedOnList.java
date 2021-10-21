@@ -1,74 +1,113 @@
-import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class taskABasedOnList {
 
-    static class Node {
+    private static class Node {
 
-        private Node prev;              // reference to previous node
-        private Node next;              // reference to next node
+        Node prev;
+        Node next;
 
-        private int value;              // stored value
+        int value;
 
-        public Node(Node prev, Node next, int value) {              // node constructor
+        public Node(Node prev, int value, Node next) {
             this.prev = prev;
             this.next = next;
-            this.value = value;
-        }
-
-        public Node getPrev() {
-            return prev;
-        }
-
-        public Node getNext() {
-            return next;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public void setPrev(Node prev) {
-            this.prev = prev;
-        }
-
-        public void setNext(Node next) {
-            this.next = next;
-        }
-
-        public void setValue(int value) {
             this.value = value;
         }
     }
 
-    static class List {
+    private static class List {
 
-        Node[] list;                // list itself
+        int size = 0;
 
-        int capacity;               // current list capacity
-        int size;               // current list size
-        int tail;               // last element pointer
+        Node first;
+        Node last;
 
-        public List() {             // list constructor
-            capacity = 0;
-            size = 0;
-            list = new Node[capacity];
+        Node node(int index) {
+            Node buf = first;
+            for (int i = 0; i < index; i++) {
+                buf = buf.next;
+            }
+            return buf;
         }
 
-        void reallocate() {
-            capacity *= 2 + 1;
-            Node[] buf = list;
-            list = new Node[capacity];
-            System.arraycopy(buf, 0, list, 0, buf.length);
+        void add(int value) {
 
+            if (size == 0) {
+                first = new Node(null, value, null);
+                last = first;
+            }
+            else {
+                Node buf = new Node(last, value, null);
+                last.next = buf;
+                last = buf;
+            }
+
+            size++;
         }
-
 
         void add(int index, int value) {
+            if (index > size) {
+                System.err.print("IndexOutOfBoundsException");
+                return;
+            }
+            if (index == size) add(value);
+            if (index < size) {
+                Node withNeededIndex = node(index);
+                Node buf = new Node(withNeededIndex.prev, value, withNeededIndex);
+                buf.prev.next = buf;
+                withNeededIndex.prev = buf;
+            }
+            size++;
+        }
 
-            if (capacity == 0) reallocate();
-
-            //list[index] = new Node();
+        int remove(int index) {
+            if (size < 1 || index > size - 1){
+                System.err.print("IndexOutOfBoundsException");
+                return -1;
+            }
+            if (index == 0) {
+                int deletedValue = first.value;
+                first = first.next;
+                first.prev = null;
+                size--;
+                return deletedValue;
+            }
+            if (index == size - 1) {
+                int deletedValue = last.value;
+                last = last.prev;
+                last.next = null;
+                size--;
+                return deletedValue;
+            }
+            else {
+                Node deleted = node(index);
+                deleted.prev.next = deleted.next;
+                deleted.next.prev = deleted.prev;
+                size--;
+                return deleted.value;
+            }
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader("stack.in"));
+        List list = new List();
+        FileWriter writer = new FileWriter("stack.out");
+        int n = Integer.parseInt(reader.readLine());
+        for (int i = 0; i < n; i++) {
+            String[] cmd = reader.readLine().split(" ");
+            if (cmd[0].equals("+")) {
+                list.add(Integer.parseInt(cmd[1]));
+            }
+            if (cmd[0].equals("-")) {
+                writer.write(String.format("%d\n", list.remove(list.size - 1)));
+            }
+        }
+        reader.close();
+        writer.close();
+    }
 }
