@@ -3,7 +3,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class taskABasedOnList {
+public class taskBBasedOnList {
+
 
     private static class List {
 
@@ -94,17 +95,17 @@ public class taskABasedOnList {
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("stack.in"));
-        List list = new List();
-        FileWriter writer = new FileWriter("stack.out");
+        BufferedReader reader = new BufferedReader(new FileReader("queue.in"));
         int n = Integer.parseInt(reader.readLine());
+        FileWriter writer = new FileWriter("queue.out");
+        List queue = new List();
         for (int i = 0; i < n; i++) {
             String[] cmd = reader.readLine().split(" ");
             if (cmd[0].equals("+")) {
-                list.add(Integer.parseInt(cmd[1]));
+                queue.add(Integer.parseInt(cmd[1]));
             }
             if (cmd[0].equals("-")) {
-                writer.write(String.format("%d\n", list.remove(list.size - 1)));
+                writer.write(String.format("%d\n", queue.remove(0)));
             }
         }
         reader.close();
