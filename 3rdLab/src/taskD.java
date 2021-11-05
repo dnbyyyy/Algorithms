@@ -1,6 +1,7 @@
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class taskD {
@@ -8,30 +9,34 @@ public class taskD {
     static class IndexedValue {
 
         int value;
-        int index = -1;
+        int index;
 
         public IndexedValue(int value, int index) {
             this.value = value;
             this.index = index;
         }
-    }
 
-    static int[] indexes = new int[10000000];
+        public IndexedValue(int value) {
+            this.value = value;
+        }
+
+
+
+    }
 
     static class Heap {
 
-        int[] heap = new int[1000000];
+        IndexedValue[] heap = new IndexedValue[1000000];
 
         int heapSize = 0;
 
-        int siftUp(int key) {
-            while (heap[key] < heap[(key - 1) / 2]) {
-                int tmp = heap[key];
+        void siftUp(int key) {
+            while (heap[key].value < heap[(key - 1) / 2].value) {
+                IndexedValue tmp = heap[key];
                 heap[key] = heap[(key - 1) / 2];
                 heap[(key - 1) / 2] = tmp;
                 key = (key - 1) / 2;
             }
-            return key;
         }
 
         void siftDown(int key) {
@@ -39,9 +44,9 @@ public class taskD {
                 int left = 2 * key + 1;
                 int right = 2 * key + 2;
                 int j = left;
-                if (right < heapSize && heap[right] < heap[left]) j = right;
-                if (heap[key] <= heap[j]) break;
-                int tmp = heap[key];
+                if (right < heapSize && heap[right].value < heap[left].value) j = right;
+                if (heap[key].value <= heap[j].value) break;
+                IndexedValue tmp = heap[key];
                 heap[key] = heap[j];
                 heap[j] = tmp;
                 key = j;
@@ -49,21 +54,22 @@ public class taskD {
         }
 
         int extractMin() {
-            int min = heap[0];
+            int min = heap[0].value;
             heap[0] = heap[heapSize - 1];
             heapSize--;
             siftDown(0);
             return min;
         }
 
-        int insert(int value) {
+        void insert(int value, int cmdNum) {
             heapSize++;
-            heap[heapSize - 1] = value;
-            return siftUp(heapSize - 1);
+            IndexedValue indexedValue = new IndexedValue(value, cmdNum);
+            heap[heapSize - 1] = indexedValue;
+            siftUp(heapSize - 1);
         }
 
         void decreaseKey(int key, int value) {
-            heap[key] = value;
+            heap[key].value = value;
             siftUp(key);
         }
     }
@@ -73,12 +79,12 @@ public class taskD {
         Heap heap = new Heap();
         Scanner in = new Scanner(new FileReader("priorityqueue.in"));
         FileWriter writer = new FileWriter("priorityqueue.out");
-        int cmdNum = 0;
+        int cmdNum = -1;
         while (in.hasNext()) {
-            String[] cmd = in.nextLine().split(" ");
+            String[] cmd = in.nextLine().trim().split(" ");
             cmdNum++;
             if (cmd[0].equals("push")) {
-                indexes[cmdNum] = heap.insert(Integer.parseInt(cmd[1]));
+                heap.insert(Integer.parseInt(cmd[1]), cmdNum);
             }
             if (cmd[0].equals("extract-min")) {
                 if (heap.heapSize == 0) {
@@ -87,7 +93,13 @@ public class taskD {
                 else writer.write(String.format("%d\n", heap.extractMin()));
             }
             if (cmd[0].equals("decrease-key")) {
-                heap.decreaseKey(indexes[Integer.parseInt(cmd[1])], Integer.parseInt(cmd[2]));
+                int key = Integer.parseInt(cmd[1]) - 1, value = Integer.parseInt(cmd[2]);
+                for (int i = 0; i < heap.heapSize; i++) {
+                    if (heap.heap[i].index == key) {
+                        heap.decreaseKey(heap.heap[i].index, value);
+                        break;
+                    }
+                }
             }
         }
         in.close();
