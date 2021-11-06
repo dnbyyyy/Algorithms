@@ -35,10 +35,10 @@ public class taskF {
         double[] h = new double[n];
         h[0] = Double.parseDouble(data[1]);
 
-        double a = findB(h, n);
+        double b = findB(h, n);
 
         FileWriter writer = new FileWriter("garland.out");
-        writer.write(String.format("%.2f", a));
+        writer.write(String.format("%.2f", b));
         writer.close();
         reader.close();
         }
