@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class taskD {
 
-    static int modulo = 65536;
+    static final int modulo = 65535;
 
     static int[] registers = new int[26];
     static ArrayList<String> commands = new ArrayList<>();
@@ -66,33 +66,33 @@ public class taskD {
                 case '+':
                     a = queue.remove();
                     b = queue.remove();
-                    x = (a + b) & (modulo - 1);
+                    x = (a + b) & (modulo);
                     queue.add(x);
                     break;
                 case '-':
                     a = queue.remove();
                     b = queue.remove();
-                    x = (a - b) & (modulo - 1);
+                    x = (a - b) & (modulo);
                     queue.add(x);
                     break;
                 case '*':
                     a = queue.remove();
                     b = queue.remove();
-                    x = (a * b) & (modulo - 1);
+                    x = (a * b) & (modulo);
                     queue.add(x);
                     break;
                 case '/':
                     a = queue.remove();
                     b = queue.remove();
                     if (b == 0) x = 0;
-                    else x = (a / b) & (modulo - 1);
+                    else x = (a / b) & (modulo);
                     queue.add(x);
                     break;
                 case '%':
                     a = queue.remove();
                     b = queue.remove();
                     if (b == 0) x = 0;
-                    else x = (a % b) & (modulo - 1);
+                    else x = (a % b) & (modulo);
                     queue.add(x);
                     break;
                 case '>':

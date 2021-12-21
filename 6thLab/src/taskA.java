@@ -1,74 +1,54 @@
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
 
 public class taskA {
 
     static class Set {
 
-        private static ArrayList<Integer>[] hashTable = new ArrayList[1001];
+        ArrayList<Integer>[] hashTable = new ArrayList[100001];
 
-        private static int hash(int key) {
-            return (int) Math.abs(Math.floor(1001 * (key * 0.3 % 1)));
-        }
-
-        public Set() {
-            Arrays.fill(hashTable, new ArrayList<>());
-        }
-
-        boolean exists(int key) {
-            int index = hash(key);
-            for (int i = 0; i < hashTable[index].size(); i++) {
-                if (hashTable[index].get(i) == key) return true;
-            }
-            return false;
+        int hash(int key) {
+            return Math.abs(key % 100001);
         }
 
         void insert(int key) {
-            if (!exists(key)) hashTable[hash(key)].add(key);
+            int index = hash(key);
+            if (hashTable[index] == null) hashTable[index] = new ArrayList<>();
+            hashTable[index].add(key);
         }
 
-        void remove(int key) {
-            if (exists(key)) {
-                int deleted = 0;
-                int index = hash(key);
-                for (int i = 0; i < hashTable[index].size(); i++) {
-                    if (hashTable[index].get(i) == key) {
-                        deleted = i;
-                        break;
-                    }
-                }
-                hashTable[index].remove(deleted);
-            }
+        void delete(int key, int index) {
+            int tableIndex = hash(key);
+            hashTable[tableIndex].remove(index);
         }
     }
 
     public static void main(String[] args) throws IOException {
-
-        Scanner reader  = new Scanner(new FileReader("set.in"));
+        BufferedReader reader =  new BufferedReader(new FileReader("set.in"));
         FileWriter writer = new FileWriter("set.out");
-
         Set set = new Set();
-
-        while (reader.hasNext()) {
-            String cmd = reader.next();
-            int key = reader.nextInt();
-
-            switch (cmd) {
-                case "insert":
-                    set.insert(key);
-                    break;
-                case "delete":
-                    set.remove(key);
-                    break;
-                case "exists":
-                    if (set.exists(key)) writer.write("true\n");
-                    else writer.write("false\n");
-                    break;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] buf = line.split(" ");
+            String cmd = buf[0];
+            int key = Integer.parseInt(buf[1]);
+            boolean exists = false;
+            int index = -1;
+            if (set.hashTable[set.hash(key)] != null) {
+                for (int i = 0; i < set.hashTable[set.hash(key)].size(); i++) {
+                    if (set.hashTable[set.hash(key)].get(i) == key) {
+                        exists = true;
+                        index = i;
+                        break;
+                    }
+                }
             }
+            if (cmd.equals("exists")) writer.write(exists ? "true\n" : "false\n");
+            if (cmd.equals("insert") && !exists) set.insert(key);
+            if (cmd.equals("delete") && index >= 0) set.delete(key, index);
         }
         reader.close();
         writer.close();

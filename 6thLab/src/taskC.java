@@ -1,277 +1,168 @@
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class taskC {
+    BufferedReader br;
+    StringTokenizer in;
+    PrintWriter out;
 
-    static class LinkedHashMapCustom<K, V> {
+    public static void main(String[] args) {
+        String fileName = "linkedmap";
+        new taskC().run(String.format("%s.in", fileName), String.format("%s.out", fileName));
+    }
 
-        private Entry<K,V>[] table;   //Array of Entry.
-        private int capacity= 4;  //Initial capacity of HashMap
-        private Entry<K,V> header; //head of the doubly linked list.
-        private Entry<K,V> last; //last of the doubly linked list.
+    public void solve() throws IOException {
+        String inputString = nextToken();
+        String inputValue1, inputValue2;
+        LinkedMap map = new LinkedMap();
 
-        class Entry<K, V> {
-            K key;
-            V value;
-            Entry<K,V> next;
-            Entry<K,V> before,after;
+        LinkedMapNode lastNode = null;
+        LinkedMapNode removed;
 
-            public Entry(K key, V value, Entry<K,V> next){
-                this.key = key;
-                this.value = value;
-                this.next = next;
-            }
-        }
+        while (inputString != null) {
+            inputValue1 = nextToken();
 
-
-        @SuppressWarnings("unchecked")
-        public LinkedHashMapCustom(){
-            table = new Entry[capacity];
-        }
-
-        public void put(K newKey, V data){
-            if(newKey==null)
-                return;    //does not allow to store null.
-
-            int hash=hash(newKey);
-
-            Entry<K,V> newEntry = new Entry<K,V>(newKey, data, null);
-            maintainOrderAfterInsert(newEntry);
-            if(table[hash] == null){
-                table[hash] = newEntry;
-            }else{
-                Entry<K,V> previous = null;
-                Entry<K,V> current = table[hash];
-                while(current != null){ //we have reached last entry of bucket.
-                    if(current.key.equals(newKey)){
-                        if(previous==null){  //node has to be insert on first of bucket.
-                            newEntry.next=current.next;
-                            table[hash]=newEntry;
-                            return;
-                        }
-                        else{
-                            newEntry.next=current.next;
-                            previous.next=newEntry;
-                            return;
-                        }
+            switch (inputString) {
+                case "put" -> {
+                    inputValue2 = nextToken();
+                    lastNode = map.put(new LinkedMapNode(inputValue1, inputValue2, lastNode));
+                }
+                case "delete" -> {
+                    removed = map.delete(inputValue1);
+                    if (removed != null && lastNode != null && removed.key.equals(lastNode.key)) {
+                        lastNode = removed.prev;
                     }
-                    previous=current;
-                    current = current.next;
                 }
-                previous.next = newEntry;
-            }
-        }
-
-        private void maintainOrderAfterInsert(Entry<K, V> newEntry) {
-
-            if(header==null){
-                header=newEntry;
-                last=newEntry;
-                return;
-            }
-
-            if(header.key.equals(newEntry.key)){
-                deleteFirst();
-                insertFirst(newEntry);
-                return;
-            }
-
-            if(last.key.equals(newEntry.key)){
-                deleteLast();
-                insertLast(newEntry);
-                return;
-            }
-
-            Entry<K, V> beforeDeleteEntry=    deleteSpecificEntry(newEntry);
-            if(beforeDeleteEntry==null){
-                insertLast(newEntry);
-            }
-            else{
-                insertAfter(beforeDeleteEntry,newEntry);
-            }
-
-
-        }
-
-        private void maintainOrderAfterDeletion(Entry<K, V> deleteEntry) {
-
-            if(header.key.equals(deleteEntry.key)){
-                deleteFirst();
-                return;
-            }
-
-            if(last.key.equals(deleteEntry.key)){
-                deleteLast();
-                return;
-            }
-
-            deleteSpecificEntry(deleteEntry);
-
-        }
-
-        private void insertAfter(Entry<K, V> beforeDeleteEntry, Entry<K, V> newEntry) {
-            Entry<K, V> current=header;
-            while(current!=beforeDeleteEntry){
-                current=current.after;  //move to next node.
-            }
-
-            newEntry.after=beforeDeleteEntry.after;
-            beforeDeleteEntry.after.before=newEntry;
-            newEntry.before=beforeDeleteEntry;
-            beforeDeleteEntry.after=newEntry;
-
-        }
-
-        private void deleteFirst(){
-
-            if(header==last){ //only one entry found.
-                header=last=null;
-                return;
-            }
-            header=header.after;
-            header.before=null;
-
-        }
-
-        private void insertFirst(Entry<K, V> newEntry){
-
-            if(header==null){ //no entry found
-                header=newEntry;
-                last=newEntry;
-                return;
-            }
-
-            newEntry.after=header;
-            header.before=newEntry;
-            header=newEntry;
-
-        }
-
-        private void insertLast(Entry<K, V> newEntry){
-
-            if(header==null){
-                header=newEntry;
-                last=newEntry;
-                return;
-            }
-            last.after=newEntry;
-            newEntry.before=last;
-            last=newEntry;
-
-        }
-
-        /**
-         * deletes entry from last.
-         */
-        private void deleteLast(){
-
-            if(header==last){
-                header=last=null;
-                return;
-            }
-
-            last=last.before;
-            last.after=null;
-        }
-
-        private Entry<K, V> deleteSpecificEntry(Entry<K, V> newEntry){
-
-            Entry<K, V> current=header;
-            while(!current.key.equals(newEntry.key)){
-                if(current.after==null){   //entry not found
-                    return null;
+                case "get" -> {
+                    LinkedMapNode get = map.get(inputValue1);
+                    out.print(String.format("%s\n", get != null ? get.value : "none"));
                 }
-                current=current.after;  //move to next node.
+                case "prev" -> out.print(String.format("%s\n", map.prev(inputValue1)));
+                case "next" -> out.print(String.format("%s\n", map.next(inputValue1)));
+
             }
-
-            Entry<K, V> beforeDeleteEntry=current.before;
-            current.before.after=current.after;
-            current.after.before=current.before;  //entry deleted
-            return beforeDeleteEntry;
-        }
-
-        public V get(K key){
-            int hash = hash(key);
-            if(table[hash] == null){
-                return null;
-            }else{
-                Entry<K,V> temp = table[hash];
-                while(temp!= null){
-                    if(temp.key.equals(key))
-                        return temp.value;
-                    temp = temp.next; //return value corresponding to key.
-                }
-                return null;   //returns null if key is not found.
-            }
-        }
-
-        public boolean remove(K deleteKey){
-
-            int hash=hash(deleteKey);
-
-            if(table[hash] == null){
-                return false;
-            }else{
-                Entry<K,V> previous = null;
-                Entry<K,V> current = table[hash];
-
-                while(current != null){ //we have reached last entry node of bucket.
-                    if(current.key.equals(deleteKey)){
-                        maintainOrderAfterDeletion(current);
-                        if(previous==null){  //delete first entry node.
-                            table[hash]=table[hash].next;
-                            return true;
-                        }
-                        else{
-                            previous.next=current.next;
-                            return true;
-                        }
-                    }
-                    previous=current;
-                    current = current.next;
-                }
-                return false;
-            }
-
-        }
-
-        public void display(){
-
-            Entry<K, V> currentEntry=header;
-            while(currentEntry!=null){
-                System.out.print("{"+currentEntry.key+"="+currentEntry.value+"}" +" ");
-                currentEntry=currentEntry.after;
-            }
-
-        }
-
-        private int hash(K key){
-            return Math.abs(key.hashCode()) % capacity;
+            inputString = nextToken();
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        Scanner reader = new Scanner(new FileReader("linkedmap.in"));
-        FileWriter writer = new FileWriter("linkedmap.out");
+    private static class LinkedMap {
+        private final int capacity;
 
-        LinkedHashMapCustom<String, String> map = new LinkedHashMapCustom<>();
+        private final LinkedList<LinkedMapNode>[] hashMap;
 
-        while (reader.hasNext()) {
-            String[] cmd = reader.nextLine().split(" ");
-            if (cmd[0].equals("put")) map.put(cmd[1], cmd[2]);
+        private LinkedMap() {
+            capacity = 100003;
+            hashMap = new LinkedList[capacity];
+        }
 
-            if (cmd[0].equals("delete")) map.remove(cmd[1]);
-
-            if (cmd[0].equals("get")) {
-                if (map.get(cmd[1]) != null) writer.write(map.get(cmd[1]) + "\n");
-                else writer.write("none\n");
+        private LinkedMapNode put(LinkedMapNode node) {
+            int hash = getHash(node.key);
+            if (hashMap[hash] == null) {
+                hashMap[hash] = new LinkedList<>();
             }
-
-            if (cmd[0].equals("prev")) {
-                if (map.)
+            if (hashMap[hash].stream().noneMatch(node1 -> node1.key.equals(node.key))) {
+                hashMap[hash].add(node);
+                if (node.prev != null) {
+                    node.prev.next = node;
+                }
+                return node;
+            } else {
+                LinkedMapNode toChange = hashMap[hash].stream().filter(node1 -> node1.key.equals(node.key)).findAny().stream().findFirst().orElse(null);
+                assert toChange != null;
+                toChange.value = node.value;
+                return node.prev;
             }
+        }
+
+        private LinkedMapNode delete(String key) {
+            int hash = getHash(key);
+            if (hashMap[hash] == null || hashMap[hash].stream().noneMatch(node1 -> node1.key.equals(key))) {
+                return null;
+            }
+            for (LinkedMapNode node : hashMap[hash]) {
+                if (node.key.equals(key)) {
+                    if (node.prev != null) {
+                        node.prev.next = node.next;
+                    }
+                    if (node.next != null) {
+                        node.next.prev = node.prev;
+                    }
+                    hashMap[hash].remove(node);
+                    return node;
+                }
+            }
+            return null;
+        }
+
+        private LinkedMapNode get(String key) {
+            int hash = getHash(key);
+            if (hashMap[hash] != null && hashMap[hash].stream().anyMatch(node1 -> node1.key.equals(key))) {
+                return hashMap[hash].stream().filter(node1 -> node1.key.equals(key)).findAny().orElse(null);
+            }
+            return null;
+        }
+
+        public String prev(String inputValue1) {
+            LinkedMapNode node = get(inputValue1);
+            if (node != null)
+                return node.prev != null ? node.prev.value : "none";
+            return "none";
+        }
+
+        public String next(String inputValue1) {
+            LinkedMapNode node = get(inputValue1);
+            if (node != null)
+                return node.next != null ? node.next.value : "none";
+            return "none";
+        }
+
+        private int getHash(String value) {
+            int hash = 0, helper = 1;
+            for (char c : value.toLowerCase().toCharArray()) {
+                hash += (c - 'a') * helper % capacity;
+                hash %= capacity;
+                helper *= 241;
+                helper %= capacity;
+            }
+            return hash % capacity;
+        }
+    }
+
+    private static class LinkedMapNode {
+        private final String key;
+        private String value;
+        private LinkedMapNode prev;
+        private LinkedMapNode next;
+
+        private LinkedMapNode(String key, String value, LinkedMapNode prev) {
+            this.key = key;
+            this.value = value;
+            this.prev = prev;
+            this.next = null;
+        }
+    }
+
+    public String nextToken() throws IOException {
+        while (in == null || !in.hasMoreTokens()) {
+            String inputString = br.readLine();
+            if (inputString != null) {
+                in = new StringTokenizer(inputString);
+            } else {
+                return null;
+            }
+        }
+        return in.nextToken();
+    }
+
+    public void run(String inputFile, String outputFile) {
+        try {
+            br = new BufferedReader(new FileReader(inputFile));
+            out = new PrintWriter(outputFile);
+            solve();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 }
