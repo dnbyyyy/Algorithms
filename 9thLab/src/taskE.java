@@ -8,12 +8,12 @@ public class taskE {
     static ArrayList<ArrayList<Integer>> adjList = new ArrayList<>();
     static int[] color;
     static ArrayList<Integer> sort = new ArrayList<>();
-    
-    static void DFS(int index, int n) {
+
+    static void DFS(int index) {
         color[index] = 1;
 
         for (int i = 0; i < adjList.get(index).size(); i++) {
-            if (color[adjList.get(index).get(i)] == 0) DFS(adjList.get(index).get(i), n);
+            if (color[adjList.get(index).get(i)] == 0) DFS(adjList.get(index).get(i));
         }
 
         color[index] = 2;
@@ -32,10 +32,10 @@ public class taskE {
             adjList.get(reader.nextInt() - 1).add(reader.nextInt() - 1);
         }
         for (int i = 0; i < vertices; i++) {
-            if (color[i] != 2) DFS(i, vertices);
+            if (color[i] != 2) DFS(i);
         }
         boolean flag = false;
-        int tmp1 = 0, tmp2 = 0;
+        int tmp1 = 0, tmp2;
         if (!sort.isEmpty()) {
             tmp1 = sort.get(sort.size() - 1);
             sort.remove(sort.size() - 1);

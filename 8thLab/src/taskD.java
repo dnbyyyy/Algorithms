@@ -23,25 +23,25 @@ public class taskD {
 
     static class Graph {
         int V;
-        ArrayList<ArrayList<Integer>> edgeList;
+        ArrayList<ArrayList<Integer>> adjList;
 
         public Graph(int v) {
             V = v;
-            edgeList = new ArrayList<>();
+            adjList = new ArrayList<>();
             for (int i = 0; i < v; i++) {
-                edgeList.add(new ArrayList<>());
+                adjList.add(new ArrayList<>());
             }
         }
 
         void addEdge(int src, int dst) {
-            edgeList.get(src).add(dst);
-            edgeList.get(dst).add(src);
+            adjList.get(src).add(dst);
+            adjList.get(dst).add(src);
         }
 
         void DFS(int v, boolean[] visited) {
             visited[v] = true;
             vertices.get(v).componentNum = currentComponent;
-            for (int x : edgeList.get(v)) {
+            for (int x : adjList.get(v)) {
                 if (!visited[x]) DFS(x, visited);
             }
         }

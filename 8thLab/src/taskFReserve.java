@@ -6,17 +6,15 @@ public class taskFReserve {
     StringTokenizer in;
     PrintWriter out;
 
-    class Graph {
+    static class Graph {
         private final int V;
-        private int E;
-        private ArrayList<Integer>[] adj;
+        private final ArrayList<Integer>[] adjList;
 
         public Graph(int V) {
             this.V = V;
-            this.E = 0;
-            adj = (ArrayList<Integer>[]) new ArrayList[V];
+            adjList = (ArrayList<Integer>[]) new ArrayList[V];
             for (int v = 0; v < V; v++) {
-                adj[v] = new ArrayList<>();
+                adjList[v] = new ArrayList<>();
             }
         }
 
@@ -33,19 +31,18 @@ public class taskFReserve {
         }
 
         public void addEdge(int v, int w) {
-            adj[v].add(w);
-            adj[w].add(v);
-            E++;
+            adjList[v].add(w);
+            adjList[w].add(v);
         }
 
         public Iterable<Integer> adj(int v) {
-            return adj[v];
+            return adjList[v];
         }
     }
 
-    class BreadthFirstPaths {
-        private boolean[] marked;
-        private int[] edgeTo;
+    static class BreadthFirstPaths {
+        private final boolean[] marked;
+        private final int[] edgeTo;
         private final int s;
 
         public BreadthFirstPaths(Graph G, int s) {
@@ -68,7 +65,6 @@ public class taskFReserve {
                         queue.add(w);
                     }
                 }
-
             }
         }
 

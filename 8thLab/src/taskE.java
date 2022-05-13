@@ -9,13 +9,13 @@ public class taskE {
     class Graph {
         private final int vertices;
         private int edges;
-        private ArrayList<Integer>[] edgeList;
+        private ArrayList<Integer>[] adjList;
 
         public Graph(int V) {
             this.vertices = V; this.edges = 0;
-            edgeList = (ArrayList<Integer>[]) new ArrayList[V];
+            adjList = (ArrayList<Integer>[]) new ArrayList[V];
             for (int v = 0; v < V; v++) {
-                edgeList[v] = new ArrayList<>();
+                adjList[v] = new ArrayList<>();
             }
         }
 
@@ -35,13 +35,13 @@ public class taskE {
         }
 
         public void addEdge(int v, int w) {
-            edgeList[v].add(w);
-            edgeList[w].add(v);
+            adjList[v].add(w);
+            adjList[w].add(v);
             edges++;
         }
 
         public Iterable<Integer> adj(int v) {
-            return edgeList[v];
+            return adjList[v];
         }
 
         @Override

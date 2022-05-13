@@ -5,12 +5,12 @@ import java.util.*;
 
 public class taskC{
 
-    static class Pair{
-        int first, second;
+    static class Edge {
+        int src, dst;
 
-        Pair(int f, int s){
-            first = f;
-            second = s;
+        Edge(int s, int d){
+            src = s;
+            dst = d;
         }
     }
 
@@ -18,22 +18,22 @@ public class taskC{
         int[] col = new int[V];
         Arrays.fill(col, -1);
 
-        Queue<Pair> q = new LinkedList<>();
+        Queue<Edge> q = new LinkedList<>();
 
         for (int i = 0; i < V; i++) {
 
             if (col[i] == -1) {
 
-                q.add(new Pair(i, 0));
+                q.add(new Edge(i, 0));
                 col[i] = 0;
 
                 while (!q.isEmpty()) {
-                    Pair p = q.peek();
+                    Edge p = q.peek();
                     q.poll();
 
-                    int v = p.first;
+                    int v = p.src;
 
-                    int c = p.second;
+                    int c = p.dst;
 
                     for (int j : adj.get(v)) {
                         if (col[j] == c)
@@ -41,7 +41,7 @@ public class taskC{
 
                         if (col[j] == -1) {
                             col[j] = (c==1) ? 0 : 1;
-                            q.add(new Pair(j, col[j]));
+                            q.add(new Edge(j, col[j]));
                         }
                     }
                 }

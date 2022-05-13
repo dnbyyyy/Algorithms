@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class taskF {
     static ArrayList<ArrayList<Integer>> adjList = new ArrayList<>();
-    static int[] color;
+    static int[] parity;
     static boolean[] visited;
 
     static void DFS(int index) {
@@ -15,9 +15,9 @@ public class taskF {
 
         for (int i : adjList.get(index)) {
             if (!visited[i]) DFS(i);
-            if (color[i] == 0) status = true;
+            if (parity[i] == 0) status = true;
         }
-        color[index] = status ? 1 : 0;
+        parity[index] = status ? 1 : 0;
     }
 
     public static void main(String[] args) throws IOException {
@@ -28,13 +28,13 @@ public class taskF {
         for (int i = 0; i < vertices; i++) {
             adjList.add(new ArrayList<>());
         }
-        color = new int[vertices];
+        parity = new int[vertices];
         visited = new boolean[vertices];
         for (int i = 0; i < edges; i++) {
             adjList.get(reader.nextInt() - 1).add(reader.nextInt() - 1);
         }
         DFS(start - 1);
-        if (color[start - 1] == 1) writer.write("First player wins");
+        if (parity[start - 1] == 1) writer.write("First player wins");
         else writer.write("Second player wins");
         reader.close();
         writer.close();

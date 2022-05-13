@@ -25,7 +25,7 @@ public class taskD {
 
         void DFSUtil(int v, boolean[] visited) {
             visited[v] = true;
-            verticesList[v] =  currentComponent;
+            verticesList[v] = currentComponent;
 
             int n;
 
